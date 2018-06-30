@@ -68,4 +68,15 @@ def intersection(a, b, c, d):   # returns intersection of line(a, b) and line(c,
     return a + (b - a)*((c - a).cross(d - c) / det)
 
 
+def convex_hull(points):
+    p0 = min(points)
+    index = points.index(p0)
+    points[0], points[index] = points[index], points[0]
+    points = points[:1] + sorted(points[1:], key=lambda a: (int(1e9) if a.x == p0.x else (a.y - p0.y) / (a.x - p0.x), a.x, a.y))
 
+    hull = []
+    for p in points:
+        while len(hull) >= 2 and ccw(hull[-2], hull[-1], p) <= 0:
+            hull.pop()
+        hull.append(p)
+    return hull
