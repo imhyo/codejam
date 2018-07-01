@@ -22,7 +22,7 @@ def get_edge(M):
     return edge
 
 
-def parametric_search(f, left, right):
+def parametric_search_max(f, left, right):
     ans = 0
     while left < right:
         middle = (left + right) // 2
@@ -33,6 +33,22 @@ def parametric_search(f, left, right):
             right = middle
 
     if f(left):
-        ans = max(ans, middle)
+        ans = max(ans, left)
+
+    return ans
+
+
+def parametric_search_min(f, left, right):
+    ans = int(1e9)
+    while left < right:
+        middle = (left + right) // 2
+        if f(middle):
+            ans = min(ans, middle)
+            right = middle
+        else:
+            left = middle + 1
+
+    if f(left):
+        ans = min(ans, left)
 
     return ans
