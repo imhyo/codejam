@@ -22,7 +22,7 @@ class LCA:
             u, p = stack.pop()
             self.depth[u] = self.depth[p] + 1
             self.get_ancestor(u, p)
-            if u in edge:
+            if u in self.edge:
                 for v in self.edge[u]:
                     if v != p:
                         stack.append((v, u))
