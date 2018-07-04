@@ -1,27 +1,20 @@
-from heapq import heappop, heappush
+from heapq import heappush, heappop
 
 
-class Dijkstra:
-    def __init__(self, N, graph):
-        self.N = N
-        self.graph = graph
+def dijkstra(graph, src):
+    N = len(graph)
+    dist = {graph.V[x]: -1 for x in range(N)}
+    dist[src] = 0
+    pq = []
+    heappush(pq, (0, src))
+    while pq:
+        cost, u = heappop(pq)
+        if 0 <= dist[u] < cost or not graph[u]:
+            continue
 
-    def run(self, src):
-        dist = [-1 for _ in range(self.N + 1)]
-        dist[src] = 0
-        pq = []
-        heappush(pq, (0, src))
-        while len(pq) > 0:
-            cost, here = heappop(pq)
-
-            if 0 <= dist[here] < cost or here not in self.graph:
-                continue
-
-            for there, c in self.graph[here]:
-                next_dist = cost + c
-                if dist[there] == -1 or dist[there] > next_dist:
-                    dist[there] = next_dist
-                    heappush(pq, (next_dist, there))
-        return dist
-
-
+        for v, c in graph[u]:
+            next_dist = cost + c
+            if dist[v] == -1 or dist[v] > next_dist:
+                dist[v] = next_dist
+                heappush(pq, (next_dist, v))
+    return dist
