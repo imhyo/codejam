@@ -21,3 +21,26 @@ def factor(n):
             ans.add(i)
             ans.add(n // i)
     return ans
+
+
+def get_prime(N):
+    prime = [True for _ in range(N + 1)]
+    prime[0] = False
+    prime[1] = False
+    for n in range(2, int(sqrt(N)) + 1):
+        if prime[n]:
+            for k in range(n*2, N + 1, n):
+                prime[k] = False
+    return {n for n in range(2, N + 1) if prime[n]}
+
+
+def factorize(prime, n):
+    ans = {}
+    for p in prime:
+        while n % p == 0:
+            if p not in ans:
+                ans[p] = 0
+            ans[p] += 1
+            n //= p
+            if n == 1:
+                return ans
