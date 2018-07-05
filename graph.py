@@ -19,3 +19,9 @@ class Graph:
 
     def __repr__(self):
         return repr(self.E)
+
+    def __contains__(self, item):
+        return item in self.E
+
+    def __iter__(self):
+        return iter(self.E)

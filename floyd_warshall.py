@@ -1,9 +1,9 @@
-def floyd_warshall(N, edge):
+def floyd_warshall(N, adj):
     dist = [[int(1e9) for _ in range(N + 1)] for _ in range(N + 1)]
     for i in range(1, N + 1):
         dist[i][i] = 0
-    for u in edge:
-        for v, c in edge[u]:
+    for u in adj:
+        for v, c in adj[u]:
             dist[u][v] = c
     for k in range(1, N + 1):
         for i in range(1, N + 1):

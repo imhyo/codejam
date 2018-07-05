@@ -1,10 +1,9 @@
 # Lowest Common Ancestor
 class LCA:
-    def __init__(self, N, edge):
-        self.N = N
-        self.edge = edge
-        self.depth = [0 for _ in range(N + 1)]
-        self.ancestor = [[] for _ in range(N + 1)]
+    def __init__(self, graph):
+        self.graph = graph
+        self.depth = {graph.V[x]: 0 for x in range(0, len(graph))}
+        self.ancestor = {graph.V[x]: [] for x in range(0, len(graph))}
         self.dfs()
 
     def get_ancestor(self, u, p):
@@ -16,14 +15,14 @@ class LCA:
             i += 1
 
     def dfs(self):
-        self.depth[0] = -1
-        stack = [(1, 0)]
+        self.depth[None] = -1
+        stack = [(1, None)]
         while stack:
             u, p = stack.pop()
             self.depth[u] = self.depth[p] + 1
             self.get_ancestor(u, p)
-            if u in self.edge:
-                for v in self.edge[u]:
+            if u in self.graph:
+                for v in self.graph[u]:
                     if v != p:
                         stack.append((v, u))
 

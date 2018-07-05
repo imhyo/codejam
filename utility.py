@@ -9,19 +9,6 @@ def neighbor(N, M, y, x):
     return ans
 
 
-def get_edge(M):
-    edge = {}
-    for _ in range(M):
-        a, b, c = [int(x) for x in input().split()]
-        if a not in edge:
-            edge[a] = []
-        if b not in edge:
-            edge[b] = []
-        edge[a].append((b, c))
-        edge[b].append((a, c))
-    return edge
-
-
 def parametric_search_max(f, left, right):
     ans = 0
     while left < right:
