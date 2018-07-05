@@ -148,6 +148,64 @@ class SimpleSegTree:
         self._add(num, 1)
 
 
+from math import ceil, log2
+
+
+class SegmentTreeWithLazyPropagation:
+    def __init__(self, data):
+        self.N = len(data)
+        h = int(ceil(log2(self.N)))
+        self.tree_size = (1 << (h + 1)) - 1
+        self.tree = [0 for _ in range(self.tree_size)]
+        self.lazy = [0 for _ in range(self.tree_size)]
+        self._init(data, 1, 0, self.N - 1)
+
+    def _init(self, data, node, start, end):
+        if start == end:
+            self.tree[node] = data[start]
+        else:
+            self.tree[node] = self._init(data, node*2, start, (start + end)//2) +\
+                self._init(data, node*2 + 1, (start + end)//2 + 1, end)
+        return self.tree[node]
+
+    def _update_lazy(self, node, start, end):
+        if self.lazy[node] != 0:
+            self.tree[node] += (end - start + 1)*self.lazy[node]
+            if start != end:
+                self.lazy[node*2] += self.lazy[node]
+                self.lazy[node*2 + 1] += self.lazy[node]
+            self.lazy[node] = 0
+
+    def _update_range(self, node, start, end, left, right, diff):
+        self._update_lazy(node, start, end)
+        if left > end or right < start:
+            return
+        if left <= start and end <= right:
+            self.tree[node] += (end - start + 1)*diff
+            if start != end:
+                self.lazy[node*2] += diff
+                self.lazy[node*2 + 1] += diff
+            return
+        self._update_range(node*2, start, (start + end)//2, left, right, diff)
+        self._update_range(node*2 + 1, (start + end)//2 + 1, end, left, right, diff)
+        self.tree[node] = self.tree[node*2] + self.tree[node*2 + 1]
+
+    def update_range(self, left, right, diff):
+        self._update_range(1, 0, self.N - 1, left, right, diff)
+
+    def _sum(self, node, start,end, left, right):
+        self._update_lazy(node, start, end)
+        if left > end or right < start:
+            return 0
+        if left <= start and end <= right:
+            return self.tree[node]
+        return self._sum(node*2, start, (start + end)//2, left, right) + \
+                    self._sum(node*2 + 1, (start + end)//2 + 1, end, left, right)
+
+    def sum(self, left, right):
+        return self._sum(1, 0, self.N - 1, left, right)
+
+
 class FenwickTree:
     def __init__(self, size):
         self.size = size
@@ -177,5 +235,3 @@ class FenwickTree:
 
     def delete(self, pos):
         self._add(pos, -1)
-
-
