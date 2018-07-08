@@ -14,6 +14,35 @@ def lcd(a, b):
     return a * b // gcd(a, b)
 
 
+class Fibonacci:
+    def __init__(self, P=0):
+        self.m = [[1, 1], [1, 0]]
+        self.P = P
+
+    def matmul(self, m1, m2):
+        if self.P == 0:
+            return [[(m1[0][0]*m2[0][0] + m1[0][1]*m2[1][0]), (m1[0][0]*m2[0][1] + m1[0][1]*m2[1][1])],
+                 [(m1[1][0]*m2[0][0] + m1[1][1]*m2[1][0]), (m1[1][0]*m2[0][1] + m1[1][1]*m2[1][1])]]
+        else:
+            return [[(m1[0][0]*m2[0][0] + m1[0][1]*m2[1][0]) % self.P, (m1[0][0]*m2[0][1] + m1[0][1]*m2[1][1]) % self.P],
+                 [(m1[1][0]*m2[0][0] + m1[1][1]*m2[1][0]) % self.P, (m1[1][0]*m2[0][1] + m1[1][1]*m2[1][1]) % self.P]]
+
+    def pow(self, m, n):
+        if n == 1:
+            return m
+        if n % 2 == 1:
+            return self.matmul(self.pow(m, n - 1), m)
+        else:
+            p = self.pow(m, n//2)
+            return self.matmul(p, p)
+
+    def get(self, n):
+        if n == 0:
+            return 0
+        m = self.pow(self.m, n)
+        return m[1][0]
+
+
 def factor(n):
     ans = set([])
     for i in range(1, int(sqrt(n)) + 1):
