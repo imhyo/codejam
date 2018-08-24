@@ -193,7 +193,7 @@ class SegmentTreeWithLazyPropagation:
     def update_range(self, left, right, diff):
         self._update_range(1, 0, self.N - 1, left, right, diff)
 
-    def _sum(self, node, start,end, left, right):
+    def _sum(self, node, start, end, left, right):
         self._update_lazy(node, start, end)
         if left > end or right < start:
             return 0
@@ -206,6 +206,8 @@ class SegmentTreeWithLazyPropagation:
         return self._sum(1, 0, self.N - 1, left, right)
 
 
+# FenwickTree (Binary Indexed Tree) with point update and range query
+# the index is 1~N
 class FenwickTree:
     def __init__(self, size):
         self.size = size
@@ -235,3 +237,30 @@ class FenwickTree:
 
     def delete(self, pos):
         self._add(pos, -1)
+
+
+# FenwickTree (Binary Indexed Tree) with range update and point query
+# the index is 0~N-1
+class FenwickTreeRangeUpdate:
+    def __init__(self, data):
+        self.data = data
+        self.N = len(data)
+        self.ft = [0 for _ in range(self.N + 1)]
+
+    def update(self, p, v):
+        p += 1
+        while p <= self.N:
+            self.ft[p] += v
+            p += p & (-p)
+
+    def update_range(self, a, b, v):
+        self.update(a, v)
+        self.update(b + 1, -v)
+
+    def query(self, a):
+        sum = 0
+        b = a + 1
+        while b > 0:
+            sum += self.ft[b]
+            b -= b & (-b)
+        return sum + self.data[a]
