@@ -1,8 +1,10 @@
 class SegmentTree:
-    def __init__(self, start, end):
+    def __init__(self, start, end, data):
         self.start = start
         self.end = end
+        self.data = data
         self.max_value = {}
+        self.min_value = {}
         self.sum_value = {}
         self.len_value = {}
         self._init(start, end)
@@ -16,6 +18,9 @@ class SegmentTree:
     def query_max(self, start, end):
         return self._query_max(start, end, self.start, self.end)
 
+    def query_min(self, start, end):
+        return self._query_min(start, end, self.start, self.end)
+
     def query_sum(self, start, end):
         return self._query_sum(start, end, self.start, self.end)
 
@@ -23,18 +28,31 @@ class SegmentTree:
         return self._query_len(start, end, self.start, self.end)
 
     def _init(self, start, end):
-        self.max_value[(start, end)] = 0
-        self.sum_value[(start, end)] = 0
-        self.len_value[(start, end)] = 0
         if start < end:
             mid = start + int((end - start) / 2)
-            self._init(start, mid)
-            self._init(mid+1, end)
+            max_l, min_l, sum_l, len_l = self._init(start, mid)
+            max_r, min_r, sum_r, len_r = self._init(mid + 1, end)
+            self.max_value[(start, end)] = max(max_l, max_r)
+            self.min_value[(start, end)] = min(min_l, min_r)
+            self.sum_value[(start, end)] = sum_l + sum_r
+            self.len_value[(start, end)] = len_l + len_r
+        else:
+            a = self.data[start - self.start]
+            self.max_value[(start, end)] = a
+            self.min_value[(start, end)] = a
+            self.sum_value[(start, end)] = a
+            if a == 0:
+                self.len_value[(start, end)] = 0
+            else:
+                self.len_value[(start, end)] = 1
+
+        return self.max_value[(start, end)], self.min_value[(start, end)], self.sum_value[(start, end)], self.len_value[(start, end)]
 
     def _add(self, start, end, weight, in_start, in_end):
         key = (in_start, in_end)
         if in_start == in_end:
             self.max_value[key] += weight
+            self.min_value[key] += weight
             self.sum_value[key] += weight
             self.len_value[key] = 1 if self.sum_value[key] > 0 else 0
             return
@@ -48,6 +66,7 @@ class SegmentTree:
             self._add(start, mid, weight, in_start, mid)
             self._add(mid+1, end, weight, mid+1, in_end)
         self.max_value[key] = max(self.max_value[(in_start, mid)], self.max_value[(mid+1, in_end)])
+        self.min_value[key] = min(self.min_value[(in_start, mid)], self.min_value[(mid+1, in_end)])
         self.sum_value[key] = self.sum_value[(in_start, mid)] + self.sum_value[(mid+1, in_end)]
         self.len_value[key] = self.len_value[(in_start, mid)] + self.len_value[(mid+1, in_end)]
 
@@ -63,6 +82,20 @@ class SegmentTree:
             else:
                 ans = max(self._query_max(start, mid, in_start, mid),
                         self._query_max(mid+1, end, mid+1, in_end))
+        return ans
+
+    def _query_min(self, start, end, in_start, in_end):
+        if start == in_start and end == in_end:
+            ans = self.min_value[(start, end)]
+        else:
+            mid = in_start + int((in_end - in_start) / 2)
+            if mid >= end:
+                ans = self._query_min(start, end, in_start, mid)
+            elif mid+1 <= start:
+                ans = self._query_min(start, end, mid+1, in_end)
+            else:
+                ans = min(self._query_min(start, mid, in_start, mid),
+                        self._query_min(mid+1, end, mid+1, in_end))
         return ans
 
     def _query_sum(self, start, end, in_start, in_end):
